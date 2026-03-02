@@ -1,8 +1,9 @@
-import cb
 import numpy as np
 from src.data import load_movielens, create_item_text
 from src.content_based import build_tfidf_matrix, recommend_by_title
 from sklearn.metrics.pairwise import cosine_similarity
+from src.collaborative import build_surprise_dataset
+from src.collaborative import train_svd
 
 if __name__ == "__main__":
     data_path = "ml-latest-small"
@@ -19,12 +20,9 @@ if __name__ == "__main__":
 
     similarities = cosine_similarity(tfidf_matrix[0], tfidf_matrix).flatten()
 
-    # sort indices by similarity (descending)
-    sorted_indices = np.argsort(similarities)[::-1]
+    data = build_surprise_dataset(ratings)
+    algo =train_svd(data)
+    print("\nSurprise dataset built successfully.")
 
-    for idx in sorted_indices[1:6]: # skip index 0 (itself)
-        print(
-            movies.iloc[idx]["title"],
-            "-> similarity:",
-            round(similarities[idx], 3)
-        )
+    prediction = algo.predict(uid=1, iid=1)
+    print("\nPredicted rating for user 1 on movie 1:", prediction.est)
