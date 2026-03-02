@@ -2,7 +2,7 @@
 
 This project is a simple hybrid movie recommendation system built using the MovieLens dataset.
 
-# 1. Content-Based iltering
+# 1. Content-Based Filtering
 
 # 2. Collaborative Filtering (SVD) 
 
@@ -22,3 +22,4 @@ This project is a simple hybrid movie recommendation system built using the Movi
 - Implement full hybrid score blending
 - Add evaluation metrics
 - Build a small web interface
+
