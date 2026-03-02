@@ -1,7 +1,8 @@
 import cb
-
+import numpy as np
 from src.data import load_movielens, create_item_text
-from src.content_based import build_tfidf_matrix
+from src.content_based import build_tfidf_matrix, recommend_by_title
+from sklearn.metrics.pairwise import cosine_similarity
 
 if __name__ == "__main__":
     data_path = "ml-latest-small"
@@ -11,21 +12,19 @@ if __name__ == "__main__":
 
     tfidf_matrix, vectorizer = build_tfidf_matrix(movies)
     print("\nTF-IDF matrix shape:", tfidf_matrix.shape)
-    
-    print("Ratings shape:", ratings.shape)
-    print("Movies shape:", movies.shape)
-    
-    print("\nSample movie:")
-    print(movies[["title", "genres", "item_text"]].head())
 
+    recs = recommend_by_title(movies, tfidf_matrix,"Toy Story (1995)", top_k = 5)
+    print("\nRecommendations: for Toy Story (1995):")
+    print(recs)
 
-    #cb = ContentBasedRecommender()
-    #cb.fit(movies)
-    #print("\nTF-idf matrix shape:", cb.tfidf_matrix.shape)
+    similarities = cosine_similarity(tfidf_matrix[0], tfidf_matrix).flatten()
 
-    first_vector = tfidf_matrix[0].toarray()[0]
+    # sort indices by similarity (descending)
+    sorted_indices = np.argsort(similarities)[::-1]
 
-    print("\nLength of vectors:", len(first_vector))
-    print("Non_zero elements:",(first_vector > 0).sum())
-    #print("First 20 values:", first_vector[:20])
-
+    for idx in sorted_indices[1:6]: # skip index 0 (itself)
+        print(
+            movies.iloc[idx]["title"],
+            "-> similarity:",
+            round(similarities[idx], 3)
+        )
